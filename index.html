@@ -134,6 +134,10 @@
   .res-box ul{margin:0;padding-left:18px;font-size:13px}
   .res-box li{margin:3px 0;color:#334155}
   .ch{font-weight:700;color:var(--primary);margin:16px 0 4px}
+  .fac-det{border:1px solid var(--line);border-radius:10px;padding:6px 14px;margin:8px 0;background:#fff}
+  .fac-det summary{cursor:pointer;padding:4px 0;color:#1e293b}
+  .fac-det summary:hover{color:var(--primary)}
+  .fac-list{padding:8px 0 6px;line-height:2.1}
 </style>
 </head>
 <body>
@@ -149,6 +153,7 @@
     <button data-tab="timeline">校史时间线</button>
     <button data-tab="guide">新生参赛规划</button>
     <button data-tab="roadmap">参赛·就业规划</button>
+    <button data-tab="resources">资源导航</button>
   </nav>
 </header>
 
@@ -160,6 +165,7 @@
   <section id="timeline" class="tab-pane"></section>
   <section id="guide" class="tab-pane"></section>
   <section id="roadmap" class="tab-pane"></section>
+  <section id="resources" class="tab-pane"></section>
 </main>
 
 <footer>
@@ -168,6 +174,7 @@
 </footer>
 
 <script src="data.js"></script>
+<script src="faculty.js"></script>
 <script>
 const D = window.HUFE_DATA;
 const {meta, records, papers, patents} = D;
@@ -807,6 +814,133 @@ function renderRoadmap(){
   });
 }
 
+/* ================= 资源导航 ================= */
+function renderResources(){
+  const ev = [
+    {t:'学校官网（新闻网 / 通知公告）', u:'https://www.hufe.edu.cn/'},
+    {t:'工程管理学院官网', u:'https://www.hufe.edu.cn/gcglxy/index.htm'},
+    {t:'工程管理学院｜第十二届"广联达杯"BIM毕业设计创新大赛获佳绩', u:'https://www.hufe.edu.cn/gcglxy/info/1473/15701.htm'},
+    {t:'工程管理学院｜空间信息与数字技术专业介绍', u:'https://www.hufe.edu.cn/gcglxy/info/1473/14011.htm'},
+    {t:'工程管理学院｜工程造价专业（BIM / 测绘培养）', u:'https://www.hufe.edu.cn/gcglxy/info/1533/14461.htm'},
+    {t:'工程管理学院｜2024年测绘学科创新创业智能大赛获佳绩', u:'https://www.hufe.edu.cn/gcglxy/info/1533/13271.htm'},
+    {t:'数学建模校赛报名通知（含竞赛QQ群618182337 / 电话88811156）', u:'https://www.hufe.edu.cn/info/1048/157641.htm'},
+    {t:'统计建模校赛通知（大数据与统计学院主办）', u:'https://www.hufe.edu.cn/sxtjxy/info/1231/12091.htm'},
+    {t:'大数据与统计学院｜通知公告', u:'https://www.hufe.edu.cn/sxtjxy/xwgg/tzgg/16.htm'},
+    {t:'学子风采｜国家奖学金获奖学生（可查往届优秀学长名字）', u:'https://www.hufe.edu.cn/xsgznew/info/1551/12951.htm'},
+    {t:'招生网｜各学院联系方式', u:'https://zs.hufe.edu.cn/lxfs/lxfs.htm'},
+  ];
+
+  const courses = [
+    {skill:'Python 编程', items:[
+      {t:'北京大学《实用Python程序设计》（中国大学MOOC）', u:'https://www.icourse163.org/learn/PKU-1460924165'},
+      {t:'嵩天《Python编程快速入门》（国家高教智慧平台）', u:'https://higher.smartedu.cn/course/63bf39abaf1f1b5d3ecf6e3a'},
+      {t:'廖雪峰 Python 教程（图文）', u:'https://www.liaoxuefeng.com/wiki/1016959663602400'},
+      {t:'B站：600集 Python 零基础教程', u:'https://search.bilibili.com/all?keyword=Python%E9%9B%B6%E5%9F%BA%E7%A1%80'},
+    ]},
+    {skill:'数学建模', items:[
+      {t:'中国大学MOOC《数学建模》课程', u:'https://www.icourse163.org/course/detail.htm?cid=1449389161'},
+      {t:'教材：姜启源《数学模型》/ 司守奎《数学建模算法与应用》', u:'https://xuanshu.hep.com.cn/front/bookFair/findBookFairDetails?onlineBookFairId=6243e8e70cf2eedd3943cba7'},
+      {t:'B站：清风数学建模 / 数学老哥', u:'https://search.bilibili.com/all?keyword=%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1'},
+    ]},
+    {skill:'BIM / Revit', items:[
+      {t:'BIM自学网（Revit 视频教程 / 真题）', u:'https://www.bimbim.cn/'},
+      {t:'Autodesk 官方 Revit / BIM 教程', u:'https://www.autodesk.com/products/revit/learn'},
+      {t:'B站：Balkan Architect Revit 教程', u:'https://search.bilibili.com/all?keyword=Revit%E6%95%99%E7%A8%8B'},
+    ]},
+    {skill:'机器学习 / AI', items:[
+      {t:'吴恩达《机器学习》（网易云课堂·中文）', u:'https://study.163.com/course/courseLearn.htm?courseId=1210076550'},
+      {t:'Coursera：Andrew Ng Machine Learning', u:'https://www.coursera.org/learn/machine-learning'},
+      {t:'李沐《动手学深度学习》（B站）', u:'https://search.bilibili.com/all?keyword=%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0'},
+    ]},
+    {skill:'C / C++ 程序设计', items:[
+      {t:'浙江大学 翁恺《程序设计入门——C语言》（国家高教平台）', u:'https://higher.smartedu.cn/course/68dd97cfa9f4619f8f938c08'},
+      {t:'大连理工大学《C语言程序设计》（中国大学MOOC）', u:'https://www.icourse163.org/course/-1001948002'},
+    ]},
+    {skill:'Git / GitHub', items:[
+      {t:'廖雪峰 Git 教程（图文）', u:'https://www.liaoxuefeng.com/wiki/896043488029600/'},
+      {t:'菜鸟教程 Git', u:'https://www.runoob.com/git/git-tutorial.html'},
+      {t:'Learn Git Branching（游戏化练习）', u:'https://learngitbranching.js.org/?locale=zh_CN'},
+    ]},
+    {skill:'数据分析（Pandas / 可视化）', items:[
+      {t:'Kaggle Learn（免费实战）', u:'https://www.kaggle.com/learn'},
+      {t:'Datawhale 开源学习', u:'https://www.datawhale.cc/'},
+    ]},
+  ];
+  const courseHtml = courses.map(c=>`<div class="org"><div class="oh">📚 ${esc(c.skill)}</div>
+    <ul>${c.items.map(i=>`<li><a href="${i.u}" target="_blank" rel="noopener">${esc(i.t)} ↗</a></li>`).join('')}</ul></div>`).join('');
+
+  const phones = [
+    ['会计学院','0731-88811006','0731-88811112'],
+    ['财政金融学院','0731-88811171','0731-88811018'],
+    ['经济学院','0731-88811148','0731-88811085'],
+    ['工商管理学院','0731-88811082','0731-88811737'],
+    ['计算机与人工智能学院','0731-88811552',''],
+    ['外国语学院','0731-88811307','0731-88811771'],
+    ['法学与公共管理学院','0731-88811160','0731-88811779'],
+    ['工程管理学院','0731-88811097','0731-88811897'],
+    ['数学与统计学院','0731-88811010','0731-88811156'],
+    ['人文与艺术学院','0731-88811125',''],
+    ['体育学院','0731-88811433',''],
+    ['马克思主义学院','0731-88811060','0731-88811145'],
+    ['国际厚生教育学院','0731-88811761','0731-88811246'],
+    ['经济地理学院','0731-88811181','18942919424 / 19907492858'],
+  ];
+  const phoneHtml = phones.map(p=>`<tr><td><b>${esc(p[0])}</b></td><td>${esc(p[1])}</td><td>${p[2]?esc(p[2]):'<span class="muted">—</span>'}</td></tr>`).join('')
+    + `<tr><td><b>学校招生办（总机）</b></td><td>0731-88811788</td><td>0731-88811755</td></tr>`;
+
+  const fac = window.FACULTY || {};
+  const facOrder = ['工程管理学院','大数据与统计学院','计算机与人工智能学院','经济学院','财政金融学院','工商管理学院','人文与艺术学院','外国语学院','会计学院','经济地理学院','厚生国际教育学院'];
+  Object.keys(fac).forEach(c=>{ if(!facOrder.includes(c)) facOrder.push(c); });
+  const facHtml = facOrder.filter(c=>fac[c]&&fac[c].length).map(c=>`
+    <details class="fac-det"><summary><b>${esc(c)}</b> <span class="muted small">（${fac[c].length} 位指导老师）</span></summary>
+    <div class="fac-list">${fac[c].map(n=>`<span class="pill">${esc(n)}</span>`).join('')}</div></details>`).join('');
+
+  const html = `
+  <div class="lead-banner">
+    🧭 <b>资源导航</b><br>
+    把你关心的「官方证据页、技能课程、各学院公开电话、各学院老师名单」一次性整理好。
+    所有外链均来自学校官网公开页面或主流学习平台，点开即用。
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>一、官方证据网页（你之前看到的结论，都源于此）</h3>
+    <div class="resource-4">
+      <div class="res-box"><h5>学校 & 本院</h5><ul>${ev.slice(0,6).map(e=>`<li><a href="${e.u}" target="_blank" rel="noopener">${esc(e.t)} ↗</a></li>`).join('')}</ul></div>
+      <div class="res-box"><h5>竞赛 & 学子</h5><ul>${ev.slice(6).map(e=>`<li><a href="${e.u}" target="_blank" rel="noopener">${esc(e.t)} ↗</a></li>`).join('')}</ul></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>二、技能学习课程（网上能搜到的，都在这）</h3>
+    <p class="small muted">按你规划里要练的硬技能分组。建议优先学 Python → 数学建模 → BIM/Revit → Git，AI 与 C 同步推进。</p>
+    <div class="grid3" style="margin-top:6px">${courseHtml}</div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>三、各学院公开办公 / 招生电话（官网公示）</h3>
+    <p class="small muted">来源：招生网「联系方式」页（<a href="https://zs.hufe.edu.cn/lxfs/lxfs.htm" target="_blank" rel="noopener">zs.hufe.edu.cn/lxfs/lxfs.htm ↗</a>）。这些是<b>学院办公 / 招生咨询</b>公开电话，用于咨询竞赛、专业、报名；老师个人手机不公开，建议通过学院办公室或官网师资页对接。</p>
+    <table><thead><tr><th>学院</th><th>电话1</th><th>电话2</th></tr></thead><tbody>${phoneHtml}</tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>四、各学院指导老师名单（来自真实获奖数据）</h3>
+    <p class="small muted">以下名单由本库 1404 条获奖记录自动归集，是官网公示中<b>真实带过竞赛</b>的指导老师（按学院）。点击展开查看；想对接某位老师，可凭姓名 + 学院去该学院官网「师资队伍」页，或拨打上方学院电话联系。</p>
+    ${facHtml}
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>五、关于「学长学姐联系方式」</h3>
+    <div class="note" style="margin-top:6px">⚠️ 说明：学校<b>不公开</b>学生的个人联系方式（微信 / 手机号 / QQ），官网只公示获奖名单里的<b>姓名</b>，不附带联系方式——这是隐私保护，本库也不会去抓取个人私联方式。但你可以通过以下<b>公开渠道</b>主动认识并联系到他们：</div>
+    <div class="resource-4" style="margin-top:6px">
+      <div class="res-box"><h5>① 数学建模竞赛 QQ 群</h5><ul><li>校赛通知里公布的官方群：<b>618182337</b>（备注班级+姓名加群，群里就是现役队员）</li></ul></div>
+      <div class="res-box"><h5>② 学院「学子风采 / 榜样」页</h5><ul><li>先记下优秀学长的名字（如国奖风采页），再去社团 / 课堂 / 群里对号入座、主动请教</li></ul></div>
+      <div class="res-box"><h5>③ 竞赛群 / 社团 / 工作室</h5><ul><li>计算机协会、数模协会、BIM 工作室招新现场，是最直接的当面认识渠道</li></ul></div>
+      <div class="res-box"><h5>④ 班导 / 辅导员 / 专业课老师引荐</h5><ul><li>一句话：「老师，我想跟学长打竞赛，您认识合适的队吗？」老师最愿意帮你牵线</li></ul></div>
+    </div>
+  </div>`;
+  $('#resources').innerHTML = html;
+}
+
 /* ---------- 启动 ---------- */
 renderOverview();
 renderSearch();
@@ -815,6 +949,7 @@ renderResearch();
 renderTimeline();
 renderGuide();
 renderRoadmap();
+renderResources();
 </script>
 </body>
 </html>
