@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>湖南财政经济学院 · 竞赛成果资料库</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --primary:#2563eb; --primary-soft:#eff6ff; --accent:#06b6d4;
+    --gold:#f59e0b; --line:#e2e8f0;
+    --lv-gj:'#2563eb'; --lv-sf:'#06b6d4'; --lv-xh:'#94a3b8';
+    --lv-gj2:'#7c3aed'; --lv-cs:'#f59e0b'; --lv-qt:'#cbd5e1';
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+  a{color:var(--primary);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .topbar{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,#2563eb,#06b6d4);
+          color:#fff;padding:14px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+          box-shadow:0 2px 12px rgba(37,99,235,.18)}
+  .brand{font-weight:700;font-size:18px;letter-spacing:.3px}
+  .brand .sub{font-weight:400;opacity:.85;font-size:12px;display:block;margin-top:2px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .tabs button{border:0;background:rgba(255,255,255,.16);color:#fff;padding:8px 14px;border-radius:999px;
+                cursor:pointer;font-size:14px;transition:.2s}
+  .tabs button:hover{background:rgba(255,255,255,.3)}
+  .tabs button.active{background:#fff;color:var(--primary);font-weight:600}
+  main{max-width:1180px;margin:0 auto;padding:22px 18px 60px}
+  .tab-pane{display:none;animation:fade .25s ease}
+  .tab-pane.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+        box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  .card h3{margin:0 0 14px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .card h3 .dot{width:9px;height:9px;border-radius:50%;background:var(--primary)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px;margin-bottom:20px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+       position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-18px;top:-18px;width:64px;height:64px;border-radius:50%;
+              background:var(--primary-soft);opacity:.7}
+  .kpi .num{font-size:30px;font-weight:800;color:var(--primary);position:relative}
+  .kpi .lab{color:var(--muted);font-size:13px;position:relative}
+  .kpi.accent .num{color:var(--accent)}
+  .kpi.gold .num{color:var(--gold)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid2b{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+  @media(max-width:880px){.grid2,.grid2b{grid-template-columns:1fr}}
+  .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:16px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld label{font-size:12px;color:var(--muted)}
+  select,input[type=text],input[type=number]{padding:8px 10px;border:1px solid var(--line);border-radius:9px;
+       font-size:14px;background:#fff;color:var(--ink);min-width:130px}
+  .chk{display:flex;gap:8px;flex-wrap:wrap}
+  .chk label{display:flex;align-items:center;gap:4px;font-size:13px;background:var(--primary-soft);
+             padding:5px 10px;border-radius:999px;cursor:pointer;color:#1d4ed8}
+  .chk input{accent-color:var(--primary)}
+  .btn{border:0;background:var(--primary);color:#fff;padding:9px 16px;border-radius:9px;cursor:pointer;
+       font-size:14px;font-weight:600}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:13px;background:#fafcff;position:sticky;top:0}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:var(--primary-soft)}
+  .tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+  .lv-国家级{background:#dbeafe;color:#1d4ed8}
+  .lv-省级{background:#cffafe;color:#0e7490}
+  .lv-校级{background:#f1f5f9;color:#475569}
+  .lv-国际级{background:#ede9fe;color:#6d28d9}
+  .lv-市级{background:#fef3c7;color:#b45309}
+  .lv-其他{background:#f8fafc;color:#64748b}
+  .pill{display:inline-block;background:#eef2ff;color:#4338ca;padding:1px 8px;border-radius:8px;font-size:12px;margin:2px}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:14px}
+  .detail{padding:14px 16px;background:#fafcff;border-left:3px solid var(--primary)}
+  .detail .row{margin:4px 0}
+  .empty{text-align:center;color:var(--muted);padding:30px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:8px 16px;cursor:pointer;font-size:14px}
+  .seg button.active{background:var(--primary);color:#fff}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{position:relative;margin-bottom:18px}
+  .tl-item::before{content:"";position:absolute;left:-22px;top:5px;width:12px;height:12px;border-radius:50%;
+                   background:var(--primary);border:2px solid #fff;box-shadow:0 0 0 2px var(--primary-soft)}
+  .tl-yr{font-weight:700;color:var(--primary)}
+  svg{display:block;max-width:100%}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:12px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .note{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:10px 14px;
+        font-size:13px;margin:14px 0}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px;border-top:1px solid var(--line)}
+  .bars-row{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}
+  .bars-row .nm{width:170px;text-align:right;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bars-row .bar{height:16px;background:linear-gradient(90deg,#2563eb,#06b6d4);border-radius:4px;min-width:3px}
+  .bars-row .vl{color:var(--ink);font-weight:600}
+  .prose{font-size:14.5px}
+  .prose h4{margin:18px 0 6px;color:var(--primary)}
+  .prose ul{padding-left:20px;margin:6px 0}
+  .prose li{margin:4px 0}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .org{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .org .oh{font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .org .badge{margin-left:auto;font-size:11px;font-weight:600;background:var(--primary-soft);color:#1d4ed8;
+             padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .org .badge.hot{background:#fff1f2;color:#e11d48}
+  .org ul{padding-left:18px;margin:6px 0 0;font-size:13px}
+  .org li{margin:3px 0;color:#334155}
+  .lead-banner{background:linear-gradient(120deg,#eff6ff,#ecfeff);border:1px solid #dbeafe;border-radius:12px;
+               padding:14px 18px;margin-bottom:18px}
+  .lead-banner b{color:var(--primary)}
+  .skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:880px){.skill-grid{grid-template-columns:1fr}}
+  .goal-chain{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:6px 0 2px}
+  .goal-node{flex:1;min-width:210px;background:linear-gradient(135deg,#eff6ff,#ecfeff);border:1px solid #dbeafe;border-radius:12px;padding:14px 16px}
+  .goal-node .gn-t{font-weight:700;color:var(--primary);font-size:15px;display:flex;align-items:center;gap:6px}
+  .goal-node .gn-d{font-size:13px;color:#334155;margin-top:5px}
+  .goal-arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;font-weight:800;padding:0 4px}
+  @media(max-width:680px){.goal-arrow{transform:rotate(90deg)}}
+  .tpl{position:relative;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.75;
+       white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .tpl .copy{position:absolute;top:8px;right:8px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;border-radius:7px;
+             padding:3px 10px;font-size:12px;cursor:pointer}
+  .tpl .copy:hover{background:#334155}
+  .resource-4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:880px){.resource-4{grid-template-columns:1fr}}
+  .res-box{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px}
+  .res-box.warn{border-left-color:var(--gold)}
+  .res-box h5{margin:0 0 6px;color:var(--ink);font-size:14px}
+  .res-box ul{margin:0;padding-left:18px;font-size:13px}
+  .res-box li{margin:3px 0;color:#334155}
+  .ch{font-weight:700;color:var(--primary);margin:16px 0 4px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🐾 湖南财政经济学院 · 竞赛成果资料库
+    <span class="sub">建校 1933 · 官网公示竞赛 / 师生 / 科研成果一站式查询</span>
+  </div>
+  <nav class="tabs">
+    <button data-tab="overview" class="active">总览看板</button>
+    <button data-tab="search">竞赛查询</button>
+    <button data-tab="analysis">近三年分析</button>
+    <button data-tab="research">科研成果</button>
+    <button data-tab="timeline">校史时间线</button>
+    <button data-tab="guide">新生参赛规划</button>
+    <button data-tab="roadmap">参赛·就业规划</button>
+  </nav>
+</header>
+
+<main>
+  <section id="overview" class="tab-pane active"></section>
+  <section id="search" class="tab-pane"></section>
+  <section id="analysis" class="tab-pane"></section>
+  <section id="research" class="tab-pane"></section>
+  <section id="timeline" class="tab-pane"></section>
+  <section id="guide" class="tab-pane"></section>
+  <section id="roadmap" class="tab-pane"></section>
+</main>
+
+<footer>
+  数据来源：湖南财政经济学院官方网站（新闻网 / 各学院及职能部门子站）公示内容整合 · 生成于 2026-08-09<br>
+  本库为公开信息汇编，仅供研究参考；师生名单与奖项以学校官方发布为准。
+</footer>
+
+<script src="data.js"></script>
+<script>
+const D = window.HUFE_DATA;
+const {meta, records, papers, patents} = D;
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ---------- 工具 ---------- */
+const uniq = a => [...new Set(a.filter(Boolean))];
+function countBy(arr, fn){const m={};for(const x of arr){const k=fn(x);if(k)m[k]=(m[k]||0)+1;}return m;}
+function topN(obj, n){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n);}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const LV_COLOR={'国家级':'#2563eb','省级':'#06b6d4','校级':'#94a3b8','国际级':'#7c3aed','市级':'#f59e0b','其他':'#cbd5e1'};
+
+/* ---------- Tab 切换 ---------- */
+$$('.tabs button').forEach(b=>b.onclick=()=>{
+  $$('.tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $$('.tab-pane').forEach(p=>p.classList.remove('active'));
+  $('#'+b.dataset.tab).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ================= 总览 ================= */
+function renderOverview(){
+  const byYear = countBy(records, r=>r.year);
+  const years = Object.keys(byYear).map(Number).sort((a,b)=>a-b);
+  const byLevel = meta.level_dist;
+  const byCollege = countBy(records.flatMap(r=>r.college.length?r.college:[null]), x=>x||'未注明');
+  const bySeries = countBy(records.map(r=>r.series||'未命名赛事'), x=>x);
+  const html = `
+  <div class="kpis">
+    <div class="kpi"><div class="num">${meta.total_records}</div><div class="lab">获奖记录总数（${meta.data_start_year}–2026）</div></div>
+    <div class="kpi accent"><div class="num">${meta.recent_records}</div><div class="lab">近三年（2024–2026）记录</div></div>
+    <div class="kpi gold"><div class="num">${meta.total_students}</div><div class="lab">参与学生（去重）</div></div>
+    <div class="kpi"><div class="num">${meta.total_teachers}</div><div class="lab">指导老师（去重）</div></div>
+    <div class="kpi accent"><div class="num">${meta.total_papers}</div><div class="lab">发表论文（官网公示）</div></div>
+    <div class="kpi"><div class="num">${meta.total_patents}</div><div class="lab">专利（官网公示）</div></div>
+  </div>
+  <div class="grid2b">
+    <div class="card">
+      <h3><span class="dot"></span>历年获奖记录趋势</h3>
+      ${vBars(years.map(y=>({label:String(y),value:byYear[y]})), {color:'#2563eb'})}
+      <div class="small muted">注：官网系统化公示始于 2009 年前后，早期年份样本较少。</div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>奖项级别构成</h3>
+      ${donut(Object.entries(byLevel).map(([k,v])=>({label:k,value:v})), LV_COLOR)}
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card">
+      <h3><span class="dot"></span>学院获奖 TOP 12</h3>
+      ${hBars(topN(byCollege,12))}
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>热门赛事系列 TOP 12</h3>
+      ${hBars(topN(bySeries,12))}
+    </div>
+  </div>
+  <div class="note">📌 说明：表格型记录含具体师生名单（共 ${meta.total_students} 名学生、${meta.total_teachers} 名老师）；
+  概况型记录（如「我校 N 项成果获奖」）仅含年份/级别/学院，已在查询中保留但无逐人名单。</div>
+  `;
+  $('#overview').innerHTML = html;
+}
+
+/* 纵向柱状（年份） */
+function vBars(items, {color='#2563eb'}={}){
+  if(!items.length) return '<div class="empty">暂无数据</div>';
+  const max=Math.max(...items.map(i=>i.value));
+  const w=560, h=240, pad=30, bw=Math.min(34,(w-pad*2)/items.length-6);
+  const step=(w-pad*2)/items.length;
+  let s=`<svg viewBox="0 0 ${w} ${h+20}" preserveAspectRatio="xMidYMid meet">`;
+  items.forEach((it,i)=>{
+    const bh=max? it.value/max*(h-pad*2):0;
+    const x=pad+step*i+(step-bw)/2;
+    const y=h-pad-bh;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${color}"/>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-5).toFixed(1)}" font-size="11" text-anchor="middle" fill="#334155">${it.value}</text>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(h-pad+15).toFixed(1)}" font-size="10.5" text-anchor="middle" fill="#64748b">${esc(it.label)}</text>`;
+  });
+  s+=`<line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#e2e8f0"/>`;
+  s+=`</svg>`;
+  return s;
+}
+
+/* 环形图 */
+function donut(items, colorMap){
+  if(!items.length) return '<div class="empty">暂无数据</div>';
+  const total=items.reduce((a,b)=>a+b.value,0);
+  const R=70,C=90,c=2*Math.PI*R; let off=0;
+  let s=`<svg viewBox="0 0 180 200" preserveAspectRatio="xMidYMid meet">`;
+  items.forEach(it=>{
+    const frac=it.value/total; const len=frac*c;
+    const col=(colorMap&&colorMap[it.label])||'#94a3b8';
+    s+=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col}" stroke-width="22"
+         stroke-dasharray="${len.toFixed(1)} ${(c-len).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}"
+         transform="rotate(-90 ${C} ${C})"/>`;
+    off+=len;
+  });
+  s+=`<text x="${C}" y="${C-4}" font-size="20" font-weight="800" text-anchor="middle" fill="#1e293b">${total}</text>`;
+  s+=`<text x="${C}" y="${C+14}" font-size="11" text-anchor="middle" fill="#64748b">总计</text></svg>`;
+  s+=`<div class="legend">`+items.map(it=>{
+    const col=(colorMap&&colorMap[it.label])||'#94a3b8';
+    const pct=(it.value/total*100).toFixed(1);
+    return `<span><i style="background:${col}"></i>${esc(it.label)} ${it.value} (${pct}%)</span>`;
+  }).join('')+`</div>`;
+  return s;
+}
+
+/* 横向条形（TOP N） */
+function hBars(items){
+  if(!items.length) return '<div class="empty">暂无数据</div>';
+  const max=Math.max(...items.map(i=>i[1]));
+  return items.map(([nm,v])=>{
+    const pct=max?Math.round(v/max*100):0;
+    return `<div class="bars-row"><span class="nm" title="${esc(nm)}">${esc(nm)}</span>
+      <span class="bar" style="width:${Math.max(pct,2)}%"></span><span class="vl">${v}</span></div>`;
+  }).join('');
+}
+
+/* ================= 竞赛查询 ================= */
+const F = {yearScope:'all', levels:new Set(), college:'', contest:'', kw:''};
+let _filtered=[], _page=1; const PAGE=50;
+
+function buildFilters(){
+  const colleges = uniq(records.flatMap(r=>r.college)).sort();
+  const scopes=[['all','全部'],['recent','近三年(2024-2026)'],['2026','2026'],['2025','2025'],['2024','2024'],['pre','2023及以前']];
+  const lvs=['国家级','省级','校级','国际级','市级','其他'];
+  return `
+  <div class="card" style="margin-bottom:18px">
+    <div class="filters">
+      <div class="fld"><label>年份范围</label>
+        <select id="f-scope">${scopes.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>
+      <div class="fld"><label>学院</label>
+        <select id="f-college"><option value="">全部学院</option>${colleges.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+      <div class="fld"><label>赛事关键词</label>
+        <input type="text" id="f-contest" placeholder="如：数学 / 电商 / 统计"></div>
+      <div class="fld"><label>全文搜索</label>
+        <input type="text" id="f-kw" placeholder="奖项/项目/师生姓名"></div>
+    </div>
+    <div class="filters">
+      <div class="fld"><label>奖项级别</label>
+        <div class="chk">${lvs.map(l=>`<label><input type="checkbox" value="${l}">${l}</label>`).join('')}</div></div>
+      <button class="btn" id="f-apply">查询</button>
+      <button class="btn ghost" id="f-reset">重置</button>
+      <span class="small muted" id="f-count" style="margin-left:auto"></span>
+    </div>
+  </div>`;
+}
+
+function applyFilter(){
+  const scope=F.yearScope;
+  _filtered = records.filter(r=>{
+    if(scope==='recent' && !(r.year>=2024)) return false;
+    if(scope==='pre' && r.year>=2024) return false;
+    if(['2026','2025','2024'].includes(scope) && r.year!=+scope) return false;
+    if(F.college && !(r.college||[]).includes(F.college)) return false;
+    if(F.contest && !(r.contest||'').includes(F.contest) && !(r.series||'').includes(F.contest)) return false;
+    if(F.levels.size && !F.levels.has(r.level)) return false;
+    if(F.kw){
+      const hay=[r.contest,r.title,r.project,...(r.students||[]),...(r.teachers||[]),r.award].join(' ');
+      if(!hay.includes(F.kw)) return false;
+    }
+    return true;
+  });
+  _page=1;
+  renderTable();
+}
+
+function renderTable(){
+  const total=_filtered.length;
+  const pages=Math.max(1,Math.ceil(total/PAGE));
+  _page=Math.min(_page,pages);
+  const slice=_filtered.slice((_page-1)*PAGE,_page*PAGE);
+  $('#f-count').textContent=`共 ${total} 条结果`;
+  const rows = slice.map((r,i)=>{
+    const idx=(_page-1)*PAGE+i;
+    const stuN=(r.students||[]).length, teaN=(r.teachers||[]).length;
+    return `<tr data-idx="${idx}">
+      <td>${r.year??'-'}</td>
+      <td>${esc(r.contest||r.series||'未命名赛事')}</td>
+      <td><span class="tag lv-${r.level}">${r.level}</span></td>
+      <td>${esc(r.award||'-')}</td>
+      <td>${(r.college||[]).map(c=>`<span class="pill">${esc(c)}</span>`).join('')||'-'}</td>
+      <td class="small">👥${stuN} · 👨‍🏫${teaN}</td>
+    </tr>
+    <tr class="drow" id="d-${idx}" style="display:none"><td colspan="6"><div class="detail">${detailHtml(r)}</div></td></tr>`;
+  }).join('');
+  $('#tbl-body').innerHTML = rows || `<tr><td colspan="6" class="empty">没有匹配的记录，试试放宽筛选条件。</td></tr>`;
+  $$('#tbl-body tr[data-idx]').forEach(tr=>tr.onclick=()=>{
+    const d=$('#d-'+tr.dataset.idx);
+    d.style.display = d.style.display==='none'?'table-row':'none';
+  });
+  // 分页
+  let pg=`<button class="btn ghost" ${_page<=1?'disabled':''} id="pg-prev">上一页</button>
+    <span class="small">第 ${_page} / ${pages} 页</span>
+    <button class="btn ghost" ${_page>=pages?'disabled':''} id="pg-next">下一页</button>`;
+  $('#pager').innerHTML=pg;
+  const pv=$('#pg-prev'),nx=$('#pg-next');
+  if(pv)pv.onclick=()=>{_page--;renderTable();};
+  if(nx)nx.onclick=()=>{_page++;renderTable();};
+}
+
+function detailHtml(r){
+  let h=`<div class="row"><b>赛事：</b>${esc(r.contest||'-')} ${r.series?` <span class="small muted">（系列：${esc(r.series)}）</span>`:''}</div>`;
+  h+=`<div class="row"><b>年份：</b>${r.year??'-'}　<b>级别：</b>${r.level}　<b>奖项：</b>${esc(r.award||'-')}</div>`;
+  h+=`<div class="row"><b>学院：</b>${(r.college||[]).join('、')||'-'}</div>`;
+  if(r.project)h+=`<div class="row"><b>项目名称：</b>${esc(r.project)}</div>`;
+  if(r.students&&r.students.length)h+=`<div class="row"><b>参赛学生：</b>${r.students.map(esc).join('、')}</div>`;
+  if(r.teachers&&r.teachers.length)h+=`<div class="row"><b>指导老师：</b>${r.teachers.map(esc).join('、')}</div>`;
+  if(r.title)h+=`<div class="row"><b>来源标题：</b>${esc(r.title)}</div>`;
+  if(r.url)h+=`<div class="row"><a href="${esc(r.url)}" target="_blank" rel="noopener">查看官方原文 ↗</a></div>`;
+  return h;
+}
+
+function renderSearch(){
+  $('#search').innerHTML = buildFilters() + `
+    <div class="card">
+      <table><thead><tr>
+        <th>年份</th><th>赛事</th><th>级别</th><th>奖项</th><th>学院</th><th>师生</th>
+      </tr></thead><tbody id="tbl-body"></tbody></table>
+      <div class="pager" id="pager"></div>
+    </div>`;
+  $('#f-scope').onchange=e=>F.yearScope=e.target.value;
+  $('#f-college').onchange=e=>F.college=e.target.value;
+  $('#f-contest').oninput=e=>F.contest=e.target.value.trim();
+  $('#f-kw').oninput=e=>F.kw=e.target.value.trim();
+  $$('.chk input').forEach(c=>c.onchange=()=>{c.checked?F.levels.add(c.value):F.levels.delete(c.value);});
+  $('#f-apply').onclick=applyFilter;
+  $('#f-reset').onclick=()=>{F.yearScope='all';F.levels.clear();F.college='';F.contest='';F.kw='';
+    $('#f-scope').value='all';$('#f-college').value='';$('#f-contest').value='';$('#f-kw').value='';
+    $$('.chk input').forEach(c=>c.checked=false);applyFilter();};
+  applyFilter();
+}
+
+/* ================= 近三年分析 ================= */
+function renderAnalysis(){
+  const rec=records.filter(r=>r.isRecent);
+  const byYear=countBy(rec,r=>r.year);
+  const byLevel=countBy(rec,r=>r.level);
+  const byCollege=countBy(rec.flatMap(r=>r.college.length?r.college:[null]),x=>x||'未注明');
+  const bySeries=countBy(rec.map(r=>r.series||'未命名赛事'),x=>x);
+  const recentPapers=papers.filter(p=>p.isRecent);
+  const topSchools=topN(byCollege,8).map(x=>x[0]).join('、');
+  const topContests=topN(bySeries,8).map(x=>`${x[0]}（${x[1]}）`).join('、');
+  const html=`
+  <div class="grid2b" style="margin-bottom:18px">
+    <div class="card"><h3><span class="dot"></span>近三年获奖年份分布</h3>
+      ${vBars(Object.keys(byYear).map(Number).sort((a,b)=>a-b).map(y=>({label:String(y),value:byYear[y]})),{color:'#06b6d4'})}
+      <div class="small muted">2026 年为不完全统计（数据截至官网公示）。</div></div>
+    <div class="card"><h3><span class="dot"></span>近三年级别构成</h3>
+      ${donut(Object.entries(byLevel).map(([k,v])=>({label:k,value:v})),LV_COLOR)}</div>
+  </div>
+  <div class="grid2" style="margin-bottom:18px">
+    <div class="card"><h3><span class="dot"></span>近三年学院 TOP 10</h3>${hBars(topN(byCollege,10))}</div>
+    <div class="card"><h3><span class="dot"></span>近三年热门赛事 TOP 10</h3>${hBars(topN(bySeries,10))}</div>
+  </div>
+  <div class="card prose">
+    <h3><span class="dot"></span>近三年竞赛态势与学科总结</h3>
+    <p>近三年（2024–2026）官网公示获奖记录 <b>${rec.length}</b> 条，占全部历史记录（${meta.total_records} 条）的 <b>${(rec.length/meta.total_records*100).toFixed(0)}%</b>，
+    其中 2025 年达 <b>${byYear[2025]||0}</b> 条，创历年峰值，整体呈高速增长态势，反映学校「以赛促学、以赛促教」的成效持续释放。</p>
+    <h4>一、级别结构：以国家级、省级为主力</h4>
+    <p>近三年中，国家级 <b>${byLevel['国家级']||0}</b> 条、省级 <b>${byLevel['省级']||0}</b> 条、校级 <b>${byLevel['校级']||0}</b> 条，
+    国际级 <b>${byLevel['国际级']||0}</b> 条。高等级奖项占比稳步提升，是学校学科竞赛实力的直接体现。</p>
+    <h4>二、优势学科：经管底色鲜明，文理工交叉拓展</h4>
+    <ul>
+      <li><b>经济与统计类</b>：数学竞赛（校赛+省赛）、「正大杯」市场调查与分析大赛、全国大学生统计建模大赛、数学建模竞赛构成第一梯队，体量最大。</li>
+      <li><b>财会与管理类</b>：电子商务大赛、商业精英挑战赛（品牌策划）、会计税务类赛事持续产出高质量奖项。</li>
+      <li><b>文理交叉类</b>：全国大学生广告艺术大赛、旅游专业综合技能大赛、测绘学科创新创业智能大赛等多点开花。</li>
+      <li><b>新工科萌芽</b>：BIM 毕业设计创新大赛、人工智能/计算机类赛事逐年增加，与学校「新文科+新工科」布局吻合。</li>
+    </ul>
+    <h4>三、学院格局：头部学院领跑</h4>
+    <p>近三年获奖集中在 ${topSchools} 等学院，其中经济学院、会计学院、大数据与统计学院稳居前列，与学校财经类主干学科定位一致。</p>
+    <h4>四、热门赛事速览</h4>
+    <p>${topContests}。</p>
+    <h4>五、科研成果配套</h4>
+    <p>同期官网公示论文 <b>${recentPapers.length}</b> 篇；专利因官网未系统公示，可核验样本极少（详见「科研成果」页）。建议后续从知网/国家知识产权局等权威渠道补全专利与论文的系统性清单。</p>
+    <div class="note">⚠️ 局限提示：本分析基于官网<b>已公示</b>信息，存在个别年份公示不完整、师生名单缺失（概况型记录）等情况；结论用于趋势性参考，不代表学校竞赛全貌。</div>
+  </div>`;
+  $('#analysis').innerHTML=html;
+}
+
+/* ================= 科研成果 ================= */
+const RP={tab:'papers',year:'',college:'',kw:''};
+function renderResearch(){
+  $('#research').innerHTML=`
+  <div class="card" style="margin-bottom:18px">
+    <div class="seg" id="rp-seg">
+      <button data-t="papers" class="active">📄 论文（${papers.length}）</button>
+      <button data-t="patents">🔬 专利（${patents.length}）</button>
+    </div>
+    <div class="filters" style="margin-top:14px">
+      <div class="fld"><label>年份</label>
+        <select id="rp-year"><option value="">全部年份</option></select></div>
+      <div class="fld"><label>学院</label>
+        <select id="rp-college"><option value="">全部学院</option></select></div>
+      <div class="fld"><label>关键词</label>
+        <input type="text" id="rp-kw" placeholder="标题/作者/期刊"></div>
+      <button class="btn" id="rp-go">筛选</button>
+    </div>
+    <div id="rp-list"></div>
+  </div>`;
+  // 选项
+  const pyears=uniq(papers.map(p=>p.year).filter(Boolean)).sort().reverse();
+  const pcols=uniq(papers.map(p=>p.college).filter(Boolean)).sort();
+  $('#rp-year').innerHTML+='<option value="">全部年份</option>'+pyears.map(y=>`<option>${esc(y)}</option>`).join('');
+  $('#rp-college').innerHTML+='<option value="">全部学院</option>'+pcols.map(c=>`<option>${esc(c)}</option>`).join('');
+  $$('#rp-seg button').forEach(b=>b.onclick=()=>{
+    $$('#rp-seg button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    RP.tab=b.dataset.t;RP.year='';RP.college='';RP.kw='';
+    $('#rp-year').value='';$('#rp-college').value='';$('#rp-kw').value='';
+    drawResearch();
+  });
+  $('#rp-year').onchange=e=>RP.year=e.target.value;
+  $('#rp-college').onchange=e=>RP.college=e.target.value;
+  $('#rp-kw').oninput=e=>RP.kw=e.target.value.trim();
+  $('#rp-go').onclick=drawResearch;
+  drawResearch();
+}
+function drawResearch(){
+  if(RP.tab==='papers'){
+    let list=papers.filter(p=>(!RP.year||p.year===RP.year)&&(!RP.college||p.college===RP.college)&&
+      (!RP.kw||(p.title+p.author+p.journal).includes(RP.kw)));
+    list.sort((a,b)=>(b.year||'').localeCompare(a.year||''));
+    $('#rp-list').innerHTML = list.length? list.map(p=>`
+      <div class="detail" style="margin:8px 0;border-left-color:#06b6d4">
+        <div><b>${esc(p.title)}</b></div>
+        <div class="small muted">${esc(p.author||'')} · ${p.journal?`《${esc(p.journal)}》`:'期刊未注明'} · ${p.year||'年份未注明'} ${p.college?`· ${esc(p.college)}`:''}</div>
+      </div>`).join('') : '<div class="empty">没有匹配的论文。</div>';
+  }else{
+    let list=patents.filter(p=>(!RP.college||p.college===RP.college)&&
+      (!RP.kw||(p.name+p.owner+p.no).includes(RP.kw)));
+    $('#rp-list').innerHTML = list.length? list.map(p=>`
+      <div class="detail" style="margin:8px 0;border-left-color:#f59e0b">
+        <div><b>${esc(p.name)}</b></div>
+        <div class="small muted">类型：${esc(p.type)} · 权利人：${esc(p.owner||'未注明')} ${p.no?`· 号：${esc(p.no)}`:''} ${p.college?`· ${esc(p.college)}`:''}</div>
+      </div>`).join('') : '<div class="empty">没有匹配的专利。</div>';
+    if(!patents.length)$('#rp-list').innerHTML+='<div class="note">⚠️ 官网未系统公示专利信息，当前仅从教师简介页挖掘到少量样本，不具备统计代表性。如需完整专利清单，建议对接国家知识产权局或学校科研处数据库。</div>';
+  }
+}
+
+/* ================= 校史时间线 ================= */
+function renderTimeline(){
+  const milestones=[
+    {y:1933,t:'学校前身创立',d:'湖南财政经济学院办学文脉可追溯至 1933 年，是一所以经济学、管理学为主，多学科协调发展的财经类本科院校。'},
+    {y:2010,t:'升本与更名关键期',d:'进入本科层次办学阶段，学科竞赛体系逐步成型，官网开始系统化公示师生获奖。'},
+    {y:2018,t:'竞赛数据跃升',d:`官网公示获奖记录在本年显著增多（${meta.level_dist?'约 184 条':''}），「以赛促学」成为育人主线。`},
+    {y:2023,t:'再创新高',d:'全年公示获奖 212 条，统计建模、市场调查、电子商务等赛事形成稳定优势。'},
+    {y:2024,t:'近三年窗口开启',d:`本年度公示 ${meta.recent_year_dist['2024']||0} 条，国家级/省级高等级奖项占比提升。`},
+    {y:2025,t:'历史峰值',d:`全年公示 ${meta.recent_year_dist['2025']||0} 条，创历年之最，新工科（BIM、测绘、AI）赛事开始放量。`},
+    {y:2026,t:'持续拓展',d:`截至官网公示，${meta.recent_year_dist['2026']||0} 条（统计进行中），文理交叉与新工科布局深化。`},
+  ];
+  const html=`<div class="card"><h3><span class="dot"></span>建校至今 · 竞赛发展脉络</h3>
+    <div class="timeline">${milestones.map(m=>`<div class="tl-item">
+      <div class="tl-yr">${m.y}</div><div><b>${m.t}</b></div>
+      <div class="small muted">${m.d}</div></div>`).join('')}</div>
+    <div class="note">注：学校始建于 1933 年；官网<b>系统化公示</b>的竞赛数据自 2009 年前后起，早期年份样本有限，时间线聚焦可核查的近十余年节点。</div>
+  </div>`;
+  $('#timeline').innerHTML=html;
+}
+
+/* ================= 新生参赛规划（工程软件专业） ================= */
+function renderGuide(){
+  const KW=['软件','计算机','程序','编程','蓝桥','算法','数据','大数据','人工智能','智能','互联网','创新创业',
+            '数学建模','建模','工程','信创','网络','物联网','机器人','BIM','测绘','城乡规划','结构设计',
+            '挑战杯','创青春','大创','信息','数字化','虚拟现实','区块链','电子设计'];
+  const relRecs=records.filter(r=>{const s=(r.series||'')+' '+(r.contest||'')+' '+(r.title||'')+' '+(r.project||'');
+    return KW.some(k=>s.includes(k));});
+  const relRecent=relRecs.filter(r=>r.year>=2024);
+  const seriesRec=countBy(relRecs.map(r=>r.series||'未命名赛事'),x=>x);
+  const seriesCol={};
+  relRecs.forEach(r=>{(r.college||[]).forEach(c=>{const s=r.series||'未命名赛事';
+    seriesCol[s]=seriesCol[s]||{};seriesCol[s][c]=(seriesCol[s][c]||0)+1;});});
+  const topRel=topN(seriesRec,12);
+  const maxRel=Math.max(...topRel.map(x=>x[1]),1);
+  const relBars=topRel.map(([s,v])=>{
+    const lead=seriesCol[s]?Object.entries(seriesCol[s]).sort((a,b)=>b[1]-a[1])[0][0]:'多学院';
+    return `<div class="bars-row"><span class="nm" title="${esc(s)}">${esc(s)}</span>
+      <span class="bar" style="width:${Math.max(Math.round(v/maxRel*100),2)}%"></span>
+      <span class="vl">${v}</span><span class="small muted"> · ${esc(lead)}</span></div>`;
+  }).join('');
+
+  const orgs=[
+    {n:'工程管理学院（本院大本营）',b:'主场',hot:true,items:['你就读学院，工程软件专业直接对口','主战：全国大学生测绘学科创新创业智能大赛（21项）、"广联达杯"BIM毕业设计创新大赛、湖南省测绘综合技能大赛','建议：大一就盯学院竞赛通知，主动找专业课老师聊项目']},
+    {n:'大数据与统计学院 · 数学建模集训队',b:'强烈推荐',hot:true,items:['数学建模竞赛对所有专业开放，学校有"校赛→集训队→国赛"选拔机制','软件生用 Python / Matlab 建模是天然优势','建议：大一下报名校赛，冲进集训队代表学校打国赛']},
+    {n:'计算机与人工智能学院',b:'代码核心',hot:false,items:['主战：物联网应用设计竞赛、程序设计竞赛、蓝桥杯、中国大学生计算机设计大赛','建议：加入计算机类社团，刷算法 + 做项目']},
+    {n:'创新创业与人工智能学院（双创学院）',b:'2025新设',hot:false,items:['主战：互联网+（中国国际大学生创新大赛）、大创项目、创业大赛','工程软件生 = 技术合伙人 / CTO，团队极缺','配有创业指导团与创业基金']},
+    {n:'校团委 · 学生社团',b:'低成本入口',hot:false,items:['统管全校社团；招新季关注：计算机协会/编程社、数学建模协会、创新创业协会、ACM/算法社','建议：加 1–2 个，先混脸熟、打校赛练手']},
+    {n:'雷锋书院（跨学科书院）',b:'组队神器',hot:false,items:['主打交叉创新项目，方便组多学科团队打综合类赛事','适合找经管/设计同学组队做互联网+ / 挑战杯']},
+  ];
+  const orgCards=orgs.map(o=>`<div class="org">
+    <div class="oh">🎯 ${esc(o.n)} <span class="badge ${o.hot?'hot':''}">${esc(o.b)}</span></div>
+    <ul>${o.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
+
+  const html=`
+  <div class="lead-banner">
+    🧭 <b>新生参赛规划 · 工程软件专业</b><br>
+    你的专业隶属 <b>工程管理学院</b>（选科要求 物理+化学），定位是「用编程 + 工程 + 数据解决工程问题」（学院专题：编程赋能工程 · 技术点亮城市）。
+    下面基于学校官网 <b>${relRecs.length}</b> 条相关专业真实获奖数据（近三年 ${relRecent.length} 条），给你一套可落地的参赛路线。
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>一、该加入什么社团 / 协会 / 组织</h3>
+    <div class="grid3" style="margin-top:6px">${orgCards}</div>
+    <div class="note">提示：社团具体名称以每年招新为准；工程学院/计算机学院官网「学科竞赛」栏目、校团委通知是第一手信息源。</div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>二、该练什么技能（按优先级）</h3>
+    <div class="skill-grid">
+      <div>
+        <h4 style="color:var(--primary);margin:6px 0">硬技能</h4>
+        <ul class="prose" style="margin:0">
+          <li><b>编程语言</b>：Python（建模/AI/爬虫，第一优先）→ C/C++（蓝桥杯/算法）→ JavaScript/小程序（产品落地）</li>
+          <li><b>数学建模</b>：Matlab、概率统计、优化；Python 的 NumPy / SciPy / Pandas</li>
+          <li><b>工程软件栈</b>：BIM（广联达/Revit）、GIS/测绘（ArcGIS、CAD）</li>
+          <li><b>数据 / AI</b>：机器学习（scikit-learn / PyTorch）、数据分析与可视化</li>
+          <li><b>工程素养</b>：Git、Linux、SQL/数据库、前端基础、技术文档写作</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="color:var(--accent);margin:6px 0">软技能</h4>
+        <ul class="prose" style="margin:0">
+          <li><b>团队协作</b>：竞赛多为 3 人队，找互补队友（你写代码，别人做商业/文案）</li>
+          <li><b>路演与答辩</b>：PPT + 口语表达 + 数据可视化，互联网+/挑战杯很看重</li>
+          <li><b>英语文献</b>：读论文、看官方赛题</li>
+          <li><b>时间管理 / 抗压</b>：72 小时数学建模、数月打磨项目都需要</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>三、对你最对口的竞赛（来自真实获奖数据）</h3>
+    <p class="small muted">以下赛事学校已有获奖记录，括号为「累计获奖条数 · 主战学院」。数据证明这些赛道学校真能拿奖、值得投入。</p>
+    ${relBars}
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>四、四年路线图</h3>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-yr">大一</div><div><b>打地基 · 广撒网</b></div>
+        <div class="small muted">学 Python + 高数/线代；加 1–2 个社团；打数学建模校赛、蓝桥杯省赛练手，先拿校级奖项。</div></div>
+      <div class="tl-item"><div class="tl-yr">大二</div><div><b>上赛道 · 组队</b></div>
+        <div class="small muted">蓝桥杯、中国大学生计算机设计大赛、互联网+ 校赛、测绘/BIM 校赛；争取进数模集训队。</div></div>
+      <div class="tl-item"><div class="tl-yr">大三</div><div><b>冲国奖 · 做项目</b></div>
+        <div class="small muted">数学建模国赛、BIM 国赛（广联达杯）、互联网+ 省赛/国赛；跟老师做项目、攒论文/专利。</div></div>
+      <div class="tl-item"><div class="tl-yr">大四</div><div><b>变现 · 收口</b></div>
+        <div class="small muted">以赛促就业/创业/升学；把竞赛项目做成作品集或创业公司，简历直接拉开差距。</div></div>
+    </div>
+  </div>`;
+  $('#guide').innerHTML=html;
+}
+
+/* ================= 参赛·就业规划（竞赛→实习→就业） ================= */
+function topKeys(obj,n){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n);}
+function renderRoadmap(){
+  const KW=['软件','计算机','程序','编程','蓝桥','算法','数据','大数据','人工智能','智能','互联网','创新创业',
+            '数学建模','建模','工程','信创','网络','物联网','机器人','BIM','测绘','城乡规划','结构设计',
+            '挑战杯','创青春','大创','信息','数字化','虚拟现实','区块链','电子设计'];
+  const relRecs=records.filter(r=>{const s=(r.series||'')+' '+(r.contest||'')+' '+(r.title||'')+' '+(r.project||'');
+    return KW.some(k=>s.includes(k));});
+  const relRecent=relRecs.filter(r=>r.year>=2024);
+
+  // ---- 自动提取：相关专业竞赛指导老师 ----
+  const adv={};
+  relRecs.forEach(r=>{(r.teachers||[]).forEach(t=>{
+    t=(t||'').trim();
+    if(!t||t.length>6||t==='无指导老师')return;
+    const a=adv[t]=adv[t]||{name:t,count:0,colleges:{},series:{},recent:0,years:[]};
+    a.count++;
+    (r.college||[]).forEach(c=>a.colleges[c]=(a.colleges[c]||0)+1);
+    const s=r.series||r.contest||'未命名赛事'; a.series[s]=(a.series[s]||0)+1;
+    if(r.year>=2024)a.recent++; if(r.year)a.years.push(r.year);
+  });});
+  const advList=Object.values(adv).sort((a,b)=>b.count-a.count).slice(0,18);
+  const advRows=advList.map(a=>{
+    const col=topKeys(a.colleges,1)[0]?topKeys(a.colleges,1)[0][0]:'多学院';
+    const ser=topKeys(a.series,2).map(([s,v])=>`${s}(${v})`).join('、');
+    const yrs=a.years.length?`${Math.min(...a.years)}–${Math.max(...a.years)}`:'—';
+    const active=a.recent>0?`<span class="tag lv-国家级">近三年 ${a.recent} 次</span>`:'<span class="muted small">近年未公示</span>';
+    return `<tr><td><b>${esc(a.name)}</b></td><td>${esc(col)}</td><td><b>${a.count}</b></td>
+      <td>${active}</td><td class="small muted">${esc(ser)}<br><span class="small">${yrs}</span></td></tr>`;
+  }).join('');
+
+  const html=`
+  <div class="lead-banner">
+    🎯 <b>参赛 · 就业规划 · 工程软件专业</b><br>
+    你的主线：<b>打竞赛 → 拿实习 → 好就业</b>。竞赛不只是奖状，它是你攒能力、攒作品、攒人脉的入口；
+    而人脉（学长学姐 + 指导老师）又是你找到竞赛和实习的最快路径。下面把「资源从哪来、人怎么找、话怎么开口」一次讲清，
+    并基于学校 <b>${relRecs.length}</b> 条相关专业真实获奖数据（近三年 ${relRecent.length} 条）给你一份可直接敲门的老师名单。
+  </div>
+
+  <!-- 目标链路 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>一、你的目标链路：竞赛 → 实习 → 就业</h3>
+    <div class="goal-chain">
+      <div class="goal-node"><div class="gn-t">🏆 打竞赛</div>
+        <div class="gn-d">练硬技能（代码/建模/BIM）、攒可展示的作品、混进竞赛圈认识学长老师。<b>产出：能力 + 作品 + 人脉</b></div></div>
+      <div class="goal-arrow">→</div>
+      <div class="goal-node"><div class="gn-t">💼 拿实习</div>
+        <div class="gn-d">用竞赛项目做作品集 + 竞赛老师/学长内推，撬动企业实习。<b>产出：实战经验 + 推荐信</b></div></div>
+      <div class="goal-arrow">→</div>
+      <div class="goal-node"><div class="gn-t">🚀 好就业</div>
+        <div class="gn-d">竞赛奖项 + 实习经历双背书，简历直接拉开差距。<b>产出：offer / 创业 / 升学</b></div></div>
+    </div>
+    <div class="note">关键认知：竞赛是<b>手段</b>不是目的。大一大二以竞赛练手攒作品，大二下开始用作品撬实习，大三用竞赛+实习冲就业。三者环环相扣。</div>
+  </div>
+
+  <!-- 资源地图 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>二、竞赛资源从哪来（你的问题①）</h3>
+    <p class="small muted">信息差就是入场券。把下面 4 层渠道都铺上，你就不会错过任何一场能打的比赛。</p>
+    <div class="resource-4">
+      <div class="res-box"><h5>① 校内官方（最权威·第一时间）</h5>
+        <ul>
+          <li>学校新闻网 + 各学院「通知公告 / 学科竞赛」栏目（重点盯：<b>工程管理学院</b>、大数据与统计学院、计算机与人工智能学院、双创学院）</li>
+          <li>校团委、教务处、科研处/双创学院发布的竞赛报名通知</li>
+          <li>学院官网「学子风采 / 榜样」栏目——能看到往届获奖者和名字</li>
+        </ul></div>
+      <div class="res-box"><h5>② 赛事官方平台</h5>
+        <ul>
+          <li>全国大学生竞赛官网（教育部认可的赛事清单，每年更新，认准这个清单打）</li>
+          <li>各赛事官网 / 公众号（数学建模、互联网+、蓝桥杯等都有官方账号）</li>
+          <li>聚合平台：赛氪 saikr.com、我爱竞赛网等（可订阅提醒）</li>
+        </ul></div>
+      <div class="res-box warn"><h5>③ 校内人脉渠道（往往比官网还早）</h5>
+        <ul>
+          <li><b>竞赛 QQ 群 / 微信群</b>：校团委、学院发的，群里全是现役队员，报名消息最先到</li>
+          <li>社团 / 实验室 / 工作室招新（计算机协会、数模协会、BIM 工作室）</li>
+          <li>班导、辅导员、专业课老师的口头通知（很多内推名额不走官网）</li>
+        </ul></div>
+      <div class="res-box warn"><h5>④ 日常盯梢习惯</h5>
+        <ul>
+          <li>关注学院公众号、学校「创新创业」专栏</li>
+          <li>每学期初自己列一张「本学期可报赛事清单」倒排时间</li>
+          <li>把本文档里「可联系的指导老师」记下来，主动去官网师资页翻他们的研究方向</li>
+        </ul></div>
+    </div>
+  </div>
+
+  <!-- 人脉地图 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>三、怎么找学长学姐和老师（你的问题③④）</h3>
+
+    <div class="ch">🔍 找学长学姐的 6 个渠道</div>
+    <div class="resource-4">
+      <div class="res-box"><h5>1. 学院官网「学子风采 / 榜样」+ 获奖公示</h5><ul><li>有名字有照片，记下名字后去社团 / 课堂 / 群里对号入座</li></ul></div>
+      <div class="res-box"><h5>2. 竞赛 QQ 群 / 微信群</h5><ul><li>校团委、学院发的群，群里就是现役队员，直接加好友请教</li></ul></div>
+      <div class="res-box"><h5>3. 社团 / 实验室 / 工作室</h5><ul><li>去招新现场、去活动，计算机协会 / 数模协会 / BIM 工作室是最直接的入口</li></ul></div>
+      <div class="res-box"><h5>4. 班导 / 辅导员 / 任课老师引荐</h5><ul><li>一句话：「老师，我想跟学长打竞赛，您认识合适的队吗？」</li></ul></div>
+      <div class="res-box"><h5>5. 专业课课堂 + 课后提问</h5><ul><li>主动坐前排、课后问问题、留联系方式，老师最容易记住你</li></ul></div>
+      <div class="res-box"><h5>6. 经验分享会 / 宣讲会</h5><ul><li>「优秀毕业生」「国奖获得者」「竞赛经验分享」——这些是现成的学长资源</li></ul></div>
+    </div>
+
+    <div class="ch">👨‍🏫 找指导老师的 3 个渠道</div>
+    <div class="resource-4">
+      <div class="res-box"><h5>1. 各学院「师资队伍 / 教师主页」</h5><ul><li>看研究方向 + 是否写「指导学生竞赛 / 大创」</li></ul></div>
+      <div class="res-box"><h5>2. 本页下方「可联系的指导老师」</h5><ul><li>直接从 1404 条真实数据自动提取的相关竞赛指导老师，带赛次数、主战学院、近年活跃度一目了然</li></ul></div>
+      <div class="res-box"><h5>3. 官方公布的竞赛负责人</h5><ul><li>教务处 / 科研处 / 双创学院会公布各赛事的校赛负责人，这是最权威的对接人</li></ul></div>
+    </div>
+  </div>
+
+  <!-- 怎么让学长带你 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>四、怎么让学长学姐带你打（你的问题②）</h3>
+    <div class="ch">🪜 三步走：破冰 → 证明 → 长期</div>
+    <ul class="prose">
+      <li><b>破冰</b>：用下面模板发第一条消息，别发「在吗」，直接说清楚「我是谁、想打什么赛、我已经会什么、想请教什么」。</li>
+      <li><b>证明（投名状）</b>：进队前先做一个小 demo / 学完一门课，证明你能扛活。软件生最容易被要，因为队里永远缺写代码的。</li>
+      <li><b>长期相处</b>：主动打杂、先学工具别白嫖、定期反馈进度、把活干漂亮。让人愿意带你第二次，比一次拿奖更重要。</li>
+      <li><b>你的队内角色</b>：工程软件生 = 技术核心。主动承担代码 / 建模 / 数据处理，让经管、设计同学去做商业计划书和文案，互补最稳。</li>
+    </ul>
+    <div class="ch">✉️ 可直接复制的开口话术</div>
+    <div class="tpl"><button class="copy" data-copy="senior">复制</button>学长 / 学姐你好！我是工程管理学院工程软件专业大一新生 [你的名字]。
+看到你之前拿过 [赛事名] 的奖，特别想了解这个赛道怎么入门、需要提前准备什么。
+我已经在自学 Python 和数学建模，也加了一个社团，但还没有实战经验。
+方便的话想请你喝杯奶茶请教 15 分钟，或者拉我进相关的交流群，谢谢学长 / 学姐！🙏</div>
+    <div class="tpl" style="margin-top:12px"><button class="copy" data-copy="teacher">复制</button>[老师姓] 老师您好！我是工程管理学院工程软件专业大一学生 [你的名字]。
+看到您指导的 [赛事名] 取得了很好的成绩，我非常想加入您的竞赛团队锻炼自己。
+我目前自学了 Python 和算法，也在准备数学建模校赛，希望能有机会跟着您和学长学姐学习。
+不知您这学期是否有带本科生的竞赛 / 项目计划？方便的话想当面请教几分钟。</div>
+  </div>
+
+  <!-- 真实数据：指导老师名单 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>五、可联系的指导老师（来自真实获奖数据 · TOP ${advList.length}）</h3>
+    <p class="small muted">以下老师是官网公示中<b>真实带过</b>相关专业竞赛的指导老师，按带赛次数排序。可按姓名 + 主战学院去学院官网「师资队伍」页或学院办公室找到联系方式，主动敲门。</p>
+    <table><thead><tr><th>姓名</th><th>主战学院</th><th>带赛次数</th><th>近年活跃</th><th>主战赛事（TOP2）</th></tr></thead>
+      <tbody>${advRows||'<tr><td colspan="5" class="empty">暂无数据</td></tr>'}</tbody></table>
+    <div class="note">💡 工程管理学院（你的本院）有一整支 BIM / 测绘战队：<b>欧光照、颜红艳、胡灿、麻彦娜、黄智芳、李设姣、王丹、袁彩云</b> 等；统计建模（大数据与统计学院）看 <b>丁青、莫晓云、丁德琼、杨菊仙</b>。先从本院这群老师切入最高效。</div>
+  </div>
+
+  <!-- 实习撬动 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>六、竞赛怎么撬动实习（衔接就业）</h3>
+    <div class="resource-4">
+      <div class="res-box"><h5>作品集就是你的简历</h5><ul>
+        <li>把竞赛项目放上 GitHub / 技术博客，写清楚你写了什么代码、做了什么模型</li>
+        <li>整理一份「项目经历」：赛事 + 奖项 + 你的职责 + 技术栈</li></ul></div>
+      <div class="res-box"><h5>人脉内推最猛</h5><ul>
+        <li>很多企业是竞赛的赞助方 / 评委 / 合作单位，竞赛老师、学长手里常有内推名额</li>
+        <li>实习从哪里来：竞赛圈 → 老师推荐 → 校企合作单位 → 长沙本地工程软件 / BIM / 测绘 / 互联网公司</li></ul></div>
+    </div>
+    <div class="note">⏰ 节奏：大二下开始投第一份实习（哪怕是小公司实训 / 寒暑假项目），大三上冲国奖的同时争取大厂核心实习，大四秋招时竞赛 + 实习双背书，简历直接断层领先。</div>
+  </div>
+
+  <!-- 四年作战路线 -->
+  <div class="card">
+    <h3><span class="dot"></span>七、四年作战路线（竞赛 → 实习 → 就业 一体化）</h3>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-yr">大一上</div><div><b>打地基 · 广撒网</b></div>
+        <div class="small muted">学 Python + C、高数 / 线代；加 1–2 个社团；旁听竞赛、在学院官网记住「可联系的老师」名单；找一位带你的学长。</div></div>
+      <div class="tl-item"><div class="tl-yr">大一下</div><div><b>试水 · 混脸熟</b></div>
+        <div class="small muted">打数学建模校赛、蓝桥杯省赛练手，先拿校级奖；冲进数模集训队；主动给学长打杂进队。</div></div>
+      <div class="tl-item"><div class="tl-yr">大二上</div><div><b>上赛道 · 组队</b></div>
+        <div class="small muted">测绘 / BIM 校赛、中国大学生计算机设计大赛、互联网+ 校赛；攒第一个能写进简历的项目。</div></div>
+      <div class="tl-item"><div class="tl-yr">大二下</div><div><b>撬第一份实习</b></div>
+        <div class="small muted">用校赛项目 + 老师 / 学长推荐，投长沙本地企业实训或寒暑假项目，开始积累实战。</div></div>
+      <div class="tl-item"><div class="tl-yr">大三上</div><div><b>冲国奖</b></div>
+        <div class="small muted">数学建模国赛、BIM 国赛（广联达杯）、互联网+ 省 / 国赛；跟老师做项目、攒论文 / 专利。</div></div>
+      <div class="tl-item"><div class="tl-yr">大三下</div><div><b>核心实习</b></div>
+        <div class="small muted">争取大厂 / 企业核心实习，拿推荐信；竞赛奖项 + 实习双线并行。</div></div>
+      <div class="tl-item"><div class="tl-yr">大四上</div><div><b>秋招 · 收口</b></div>
+        <div class="small muted">竞赛奖项 + 实习经历双背书，简历直接拉开差距，冲心仪 offer。</div></div>
+      <div class="tl-item"><div class="tl-yr">大四下</div><div><b>落地</b></div>
+        <div class="small muted">就业 / 创业 / 升学。竞赛里认识的人脉，往往就是第一份工作的引路人。</div></div>
+    </div>
+  </div>`;
+  $('#roadmap').innerHTML=html;
+  $$('#roadmap .copy').forEach(b=>b.onclick=()=>{
+    const key=b.dataset.copy;
+    const txt=b.parentElement.innerText.replace('复制','').trim();
+    navigator.clipboard?.writeText(txt).then(()=>{b.textContent='已复制✓';
+      setTimeout(()=>b.textContent='复制',1500);}).catch(()=>{});
+  });
+}
+
+/* ---------- 启动 ---------- */
+renderOverview();
+renderSearch();
+renderAnalysis();
+renderResearch();
+renderTimeline();
+renderGuide();
+renderRoadmap();
+</script>
+</body>
+</html>
