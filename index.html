@@ -138,6 +138,8 @@
   .fac-det summary{cursor:pointer;padding:4px 0;color:#1e293b}
   .fac-det summary:hover{color:var(--primary)}
   .fac-list{padding:8px 0 6px;line-height:2.1}
+  tbody tr.engrow{background:#ecfdf5}
+  tbody tr.engrow:hover{background:#d1fae5}
 </style>
 </head>
 <body>
@@ -154,6 +156,7 @@
     <button data-tab="guide">新生参赛规划</button>
     <button data-tab="roadmap">参赛·就业规划</button>
     <button data-tab="resources">资源导航</button>
+    <button data-tab="regulations">制度与赛事评级</button>
   </nav>
 </header>
 
@@ -166,15 +169,17 @@
   <section id="guide" class="tab-pane"></section>
   <section id="roadmap" class="tab-pane"></section>
   <section id="resources" class="tab-pane"></section>
+  <section id="regulations" class="tab-pane"></section>
 </main>
 
 <footer>
-  数据来源：湖南财政经济学院官方网站（新闻网 / 各学院及职能部门子站）公示内容整合 · 生成于 2026-08-09<br>
-  本库为公开信息汇编，仅供研究参考；师生名单与奖项以学校官方发布为准。
+  数据来源：湖南财政经济学院官方网站（新闻网 / 各学院及职能部门子站）公示内容整合 · 采集 2009–2026 · 最近更新 <span id="last-updated">2026-09-30</span><br>
+  本库为公开信息汇编，仅供研究参考；师生名单与奖项以学校官方发布为准。学院名已按 2026 年现行建制显示。
 </footer>
 
 <script src="data.js"></script>
 <script src="faculty.js"></script>
+<script src="regulations.js"></script>
 <script>
 const D = window.HUFE_DATA;
 const {meta, records, papers, patents} = D;
@@ -205,7 +210,37 @@ function renderOverview(){
   const byLevel = meta.level_dist;
   const byCollege = countBy(records.flatMap(r=>r.college.length?r.college:[null]), x=>x||'未注明');
   const bySeries = countBy(records.map(r=>r.series||'未命名赛事'), x=>x);
+
+  // 最新公示动态（2026-08 之后新增采到的获奖公示）
+  const fresh = records.filter(r => (r.date || '') >= '2026-08-01');
+  const artMap = {};
+  fresh.forEach(r => {
+    const k = r.url || r.title;
+    if (!artMap[k]) artMap[k] = { title: r.title || r.series, url: r.url || '', date: r.date || '', n: 0, lv: new Set() };
+    artMap[k].n++; if (r.level) artMap[k].lv.add(r.level);
+  });
+  const freshList = Object.values(artMap).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const freshTotal = fresh.length;
+  const freshHtml = freshList.length ? `
+  <div class="card" style="margin-bottom:18px;border-left:4px solid var(--accent)">
+    <h3><span class="dot"></span>🆕 最新获奖动态（2026-08 ~ 09 官网新公示 · 共 ${freshTotal} 条记录 / ${freshList.length} 篇）</h3>
+    <p class="small muted">本次更新（2026-09-30）从学校官网新采到的获奖公示，已并入全站数据。</p>
+    <table><thead><tr><th>公示日期</th><th>获奖公示</th><th>记录数</th><th>级别</th><th>原文</th></tr></thead>
+      <tbody>${freshList.map(f => `<tr>
+        <td>${esc(f.date)}</td>
+        <td>${esc((f.title || '').slice(0, 46))}</td>
+        <td>${f.n}</td>
+        <td>${[...f.lv].map(esc).join(' / ')}</td>
+        <td>${f.url ? `<a href="${f.url}" target="_blank" rel="noopener">查看 ↗</a>` : '<span class="muted">—</span>'}</td>
+      </tr>`).join('')}</tbody></table>
+  </div>` : '';
+
   const html = `
+  <div class="card" style="margin-bottom:18px;border-left:4px solid var(--primary)">
+    <h3><span class="dot"></span>📢 2026 年院系调整说明</h3>
+    <p class="prose" style="margin:6px 0 0">${esc(meta.reorg_note || '')}</p>
+  </div>
+  ${freshHtml}
   <div class="kpis">
     <div class="kpi"><div class="num">${meta.total_records}</div><div class="lab">获奖记录总数（${meta.data_start_year}–2026）</div></div>
     <div class="kpi accent"><div class="num">${meta.recent_records}</div><div class="lab">近三年（2024–2026）记录</div></div>
@@ -559,7 +594,7 @@ function renderGuide(){
   }).join('');
 
   const orgs=[
-    {n:'工程管理学院（本院大本营）',b:'主场',hot:true,items:['你就读学院，工程软件专业直接对口','主战：全国大学生测绘学科创新创业智能大赛（21项）、"广联达杯"BIM毕业设计创新大赛、湖南省测绘综合技能大赛','建议：大一就盯学院竞赛通知，主动找专业课老师聊项目']},
+    {n:'低空经济与地理学院（本院大本营）',b:'主场 · 2026新组建',hot:true,items:['你就读学院：2026 年由原「工程管理学院」与「经济地理学院」整合组建，湖南省内首家以"低空经济与地理"冠名','下设工程软件系（系主任 李浩）；专业体系含工程软件、空间信息与数字技术、人文地理与城乡规划、工程造价、工程管理、土地资源管理、房地产开发与管理，并已启动"低空技术与工程"新专业申报','主战：全国大学生测绘学科创新创业智能大赛（本院累计 55 项，2026 年一口气拿下 16 项含 8 个特等奖）、"广联达杯"BIM毕业设计创新大赛','学院已与湖南省低空经济协会（200+ 会员单位）达成产教融合合作，无人机巡检 / 低空物流 / 城市治理方向可对接','建议：大一就盯学院竞赛通知，主动找专业课老师聊项目']},
     {n:'大数据与统计学院 · 数学建模集训队',b:'强烈推荐',hot:true,items:['数学建模竞赛对所有专业开放，学校有"校赛→集训队→国赛"选拔机制','软件生用 Python / Matlab 建模是天然优势','建议：大一下报名校赛，冲进集训队代表学校打国赛']},
     {n:'计算机与人工智能学院',b:'代码核心',hot:false,items:['主战：物联网应用设计竞赛、程序设计竞赛、蓝桥杯、中国大学生计算机设计大赛','建议：加入计算机类社团，刷算法 + 做项目']},
     {n:'创新创业与人工智能学院（双创学院）',b:'2025新设',hot:false,items:['主战：互联网+（中国国际大学生创新大赛）、大创项目、创业大赛','工程软件生 = 技术合伙人 / CTO，团队极缺','配有创业指导团与创业基金']},
@@ -573,8 +608,22 @@ function renderGuide(){
   const html=`
   <div class="lead-banner">
     🧭 <b>新生参赛规划 · 工程软件专业</b><br>
-    你的专业隶属 <b>工程管理学院</b>（选科要求 物理+化学），定位是「用编程 + 工程 + 数据解决工程问题」（学院专题：编程赋能工程 · 技术点亮城市）。
+    你的专业隶属 <b>低空经济与地理学院</b>（2026 年由原「工程管理学院」与「经济地理学院」整合组建；工程软件专业选科要求 物理+化学），
+    定位是「用编程 + 工程 + 数据解决工程问题」（学院专题：编程赋能工程 · 技术点亮城市），并叠加学院「低空经济 + 地理信息」的新赛道。
     下面基于学校官网 <b>${relRecs.length}</b> 条相关专业真实获奖数据（近三年 ${relRecent.length} 条），给你一套可落地的参赛路线。
+  </div>
+
+  <div class="card" style="margin-bottom:18px;border-left:4px solid var(--accent)">
+    <h3><span class="dot"></span>📢 学院更名提示（2026 年院系调整）</h3>
+    <p class="prose" style="margin:6px 0 0">学校 2026 年完成一轮院系调整，本站历史获奖记录的学院名已<b>统一按现行建制显示</b>。具体变化：</p>
+    <ul class="prose" style="margin:6px 0 0">
+      <li><b>低空经济与地理学院</b> = 原工程管理学院 + 经济地理学院（<b>你所在的学院</b>）</li>
+      <li><b>人文与外国语学院</b> = 原人文与艺术学院 + 外国语学院</li>
+      <li><b>数字经济学院</b>（2026 年 7 月新设，含网络与新媒体 / 文化产业管理 / 电子商务）</li>
+      <li><b>财政与公共管理学院</b>（原财政金融学院拆分）；另设 <b>金融学院</b></li>
+      <li><b>法学院</b>（原法学与公共管理学院调整）；<b>体育经济与管理学院</b>（原体育学院）</li>
+    </ul>
+    <div class="note">所以你在官网或旧资料里看到「工程管理学院」，指的就是你现在的学院，别被旧名字绕晕。</div>
   </div>
 
   <div class="card" style="margin-bottom:18px">
@@ -692,7 +741,7 @@ function renderRoadmap(){
     <div class="resource-4">
       <div class="res-box"><h5>① 校内官方（最权威·第一时间）</h5>
         <ul>
-          <li>学校新闻网 + 各学院「通知公告 / 学科竞赛」栏目（重点盯：<b>工程管理学院</b>、大数据与统计学院、计算机与人工智能学院、双创学院）</li>
+          <li>学校新闻网 + 各学院「通知公告 / 学科竞赛」栏目（重点盯：<b>低空经济与地理学院</b>（原工程管理学院）、大数据与统计学院、计算机与人工智能学院、创新创业与人工智能学院）</li>
           <li>校团委、教务处、科研处/双创学院发布的竞赛报名通知</li>
           <li>学院官网「学子风采 / 榜样」栏目——能看到往届获奖者和名字</li>
         </ul></div>
@@ -750,11 +799,11 @@ function renderRoadmap(){
       <li><b>你的队内角色</b>：工程软件生 = 技术核心。主动承担代码 / 建模 / 数据处理，让经管、设计同学去做商业计划书和文案，互补最稳。</li>
     </ul>
     <div class="ch">✉️ 可直接复制的开口话术</div>
-    <div class="tpl"><button class="copy" data-copy="senior">复制</button>学长 / 学姐你好！我是工程管理学院工程软件专业大一新生 [你的名字]。
+    <div class="tpl"><button class="copy" data-copy="senior">复制</button>学长 / 学姐你好！我是低空经济与地理学院（原工程管理学院）工程软件专业大一新生 [你的名字]。
 看到你之前拿过 [赛事名] 的奖，特别想了解这个赛道怎么入门、需要提前准备什么。
 我已经在自学 Python 和数学建模，也加了一个社团，但还没有实战经验。
 方便的话想请你喝杯奶茶请教 15 分钟，或者拉我进相关的交流群，谢谢学长 / 学姐！🙏</div>
-    <div class="tpl" style="margin-top:12px"><button class="copy" data-copy="teacher">复制</button>[老师姓] 老师您好！我是工程管理学院工程软件专业大一学生 [你的名字]。
+    <div class="tpl" style="margin-top:12px"><button class="copy" data-copy="teacher">复制</button>[老师姓] 老师您好！我是低空经济与地理学院（原工程管理学院）工程软件专业大一学生 [你的名字]。
 看到您指导的 [赛事名] 取得了很好的成绩，我非常想加入您的竞赛团队锻炼自己。
 我目前自学了 Python 和算法，也在准备数学建模校赛，希望能有机会跟着您和学长学姐学习。
 不知您这学期是否有带本科生的竞赛 / 项目计划？方便的话想当面请教几分钟。</div>
@@ -766,7 +815,7 @@ function renderRoadmap(){
     <p class="small muted">以下老师是官网公示中<b>真实带过</b>相关专业竞赛的指导老师，按带赛次数排序。可按姓名 + 主战学院去学院官网「师资队伍」页或学院办公室找到联系方式，主动敲门。</p>
     <table><thead><tr><th>姓名</th><th>主战学院</th><th>带赛次数</th><th>近年活跃</th><th>主战赛事（TOP2）</th></tr></thead>
       <tbody>${advRows||'<tr><td colspan="5" class="empty">暂无数据</td></tr>'}</tbody></table>
-    <div class="note">💡 工程管理学院（你的本院）有一整支 BIM / 测绘战队：<b>欧光照、颜红艳、胡灿、麻彦娜、黄智芳、李设姣、王丹、袁彩云</b> 等；统计建模（大数据与统计学院）看 <b>丁青、莫晓云、丁德琼、杨菊仙</b>。先从本院这群老师切入最高效。</div>
+    <div class="note">💡 <b>低空经济与地理学院（你的本院，原工程管理学院）</b>有一整支 BIM / 测绘战队：<b>欧光照、颜红艳、刘纯霞、欧阳晓、胡灿、麻彦娜、黄智芳、李设姣、王丹、袁彩云</b> 等；统计建模（大数据与统计学院）看 <b>丁青、莫晓云、丁德琼、杨菊仙</b>。先从本院这群老师切入最高效。</div>
   </div>
 
   <!-- 实习撬动 -->
@@ -818,11 +867,16 @@ function renderRoadmap(){
 function renderResources(){
   const ev = [
     {t:'学校官网（新闻网 / 通知公告）', u:'https://www.hufe.edu.cn/'},
-    {t:'工程管理学院官网', u:'https://www.hufe.edu.cn/gcglxy/index.htm'},
-    {t:'工程管理学院｜第十二届"广联达杯"BIM毕业设计创新大赛获佳绩', u:'https://www.hufe.edu.cn/gcglxy/info/1473/15701.htm'},
-    {t:'工程管理学院｜空间信息与数字技术专业介绍', u:'https://www.hufe.edu.cn/gcglxy/info/1473/14011.htm'},
-    {t:'工程管理学院｜工程造价专业（BIM / 测绘培养）', u:'https://www.hufe.edu.cn/gcglxy/info/1533/14461.htm'},
-    {t:'工程管理学院｜2024年测绘学科创新创业智能大赛获佳绩', u:'https://www.hufe.edu.cn/gcglxy/info/1533/13271.htm'},
+    {t:'低空经济与地理学院官网（原工程管理学院，你所在学院）', u:'https://www.hufe.edu.cn/gcglxy/index.htm'},
+    {t:'低空经济与地理学院｜工程软件专业介绍：编程赋能工程 技术点亮城市', u:'https://www.hufe.edu.cn/gcglxy/info/1533/15801.htm'},
+    {t:'低空经济与地理学院｜赴湖南省低空经济协会调研（产教融合 · 低空赛道）', u:'https://www.hufe.edu.cn/gcglxy/info/1473/16461.htm'},
+    {t:'★ 2026 我校在全国测绘学科竞赛获 16 项奖（含 8 个特等奖，本院主战赛事）', u:'https://news.hufe.edu.cn/info/1022/64241.htm'},
+    {t:'低空经济与地理学院｜第十二届"广联达杯"BIM毕业设计创新大赛获佳绩', u:'https://www.hufe.edu.cn/gcglxy/info/1473/15701.htm'},
+    {t:'低空经济与地理学院｜空间信息与数字技术专业介绍', u:'https://www.hufe.edu.cn/gcglxy/info/1473/14011.htm'},
+    {t:'低空经济与地理学院｜工程造价专业（BIM / 测绘培养）', u:'https://www.hufe.edu.cn/gcglxy/info/1533/14461.htm'},
+    {t:'★ 2026-09 我校获省"用英语讲好湖南故事"短视频大赛一等奖', u:'https://news.hufe.edu.cn/info/1022/64581.htm'},
+    {t:'★ 2026-09 我校在湖南省大学生数字媒体创意设计大赛获 14 个奖项', u:'https://news.hufe.edu.cn/info/1022/65101.htm'},
+    {t:'★ 2026-09 我校在全国高等院校数智化企业经营沙盘大赛总决赛获一等奖', u:'https://news.hufe.edu.cn/info/1022/65431.htm'},
     {t:'数学建模校赛报名通知（含竞赛QQ群618182337 / 电话88811156）', u:'https://www.hufe.edu.cn/info/1048/157641.htm'},
     {t:'统计建模校赛通知（大数据与统计学院主办）', u:'https://www.hufe.edu.cn/sxtjxy/info/1231/12091.htm'},
     {t:'大数据与统计学院｜通知公告', u:'https://www.hufe.edu.cn/sxtjxy/xwgg/tzgg/16.htm'},
@@ -870,26 +924,24 @@ function renderResources(){
     <ul>${c.items.map(i=>`<li><a href="${i.u}" target="_blank" rel="noopener">${esc(i.t)} ↗</a></li>`).join('')}</ul></div>`).join('');
 
   const phones = [
+    ['低空经济与地理学院（原工程管理学院）','0731-88811097','0731-88811897'],
     ['会计学院','0731-88811006','0731-88811112'],
-    ['财政金融学院','0731-88811171','0731-88811018'],
+    ['财政与公共管理学院（原财政金融学院）','0731-88811171','0731-88811018'],
     ['经济学院','0731-88811148','0731-88811085'],
-    ['工商管理学院','0731-88811082','0731-88811737'],
+    ['工商管理学院（科技商学院）','0731-88811082','0731-88811737'],
     ['计算机与人工智能学院','0731-88811552',''],
-    ['外国语学院','0731-88811307','0731-88811771'],
-    ['法学与公共管理学院','0731-88811160','0731-88811779'],
-    ['工程管理学院','0731-88811097','0731-88811897'],
-    ['数学与统计学院','0731-88811010','0731-88811156'],
-    ['人文与艺术学院','0731-88811125',''],
-    ['体育学院','0731-88811433',''],
+    ['人文与外国语学院（原人文与艺术学院 / 外国语学院）','0731-88811307','0731-88811125'],
+    ['法学院（原法学与公共管理学院）','0731-88811160','0731-88811779'],
+    ['大数据与统计学院（原数学与统计学院）','0731-88811010','0731-88811156'],
+    ['体育经济与管理学院（原体育学院）','0731-88811433',''],
     ['马克思主义学院','0731-88811060','0731-88811145'],
-    ['国际厚生教育学院','0731-88811761','0731-88811246'],
-    ['经济地理学院','0731-88811181','18942919424 / 19907492858'],
+    ['厚生国际教育学院','0731-88811761','0731-88811246'],
   ];
   const phoneHtml = phones.map(p=>`<tr><td><b>${esc(p[0])}</b></td><td>${esc(p[1])}</td><td>${p[2]?esc(p[2]):'<span class="muted">—</span>'}</td></tr>`).join('')
     + `<tr><td><b>学校招生办（总机）</b></td><td>0731-88811788</td><td>0731-88811755</td></tr>`;
 
   const fac = window.FACULTY || {};
-  const facOrder = ['工程管理学院','大数据与统计学院','计算机与人工智能学院','经济学院','财政金融学院','工商管理学院','人文与艺术学院','外国语学院','会计学院','经济地理学院','厚生国际教育学院'];
+  const facOrder = ['低空经济与地理学院','大数据与统计学院','计算机与人工智能学院','经济学院','会计学院','财政与公共管理学院','工商管理学院（科技商学院）','人文与外国语学院','厚生国际教育学院'];
   Object.keys(fac).forEach(c=>{ if(!facOrder.includes(c)) facOrder.push(c); });
   const facHtml = facOrder.filter(c=>fac[c]&&fac[c].length).map(c=>`
     <details class="fac-det"><summary><b>${esc(c)}</b> <span class="muted small">（${fac[c].length} 位指导老师）</span></summary>
@@ -941,6 +993,172 @@ function renderResources(){
   $('#resources').innerHTML = html;
 }
 
+/* ================= 制度与赛事评级 ================= */
+const R = window.REGULATIONS || {school:{},national:{}};
+let _regAFilter = false;
+const MARK_MAP={'#':'# 湖南省教育厅学科竞赛通知列入','*':'* 中国高等教育学会竞赛目录正式项目','○':'○ 省管高校领导班子高质量发展成效评价方案'};
+function markBadges(m){
+  if(!m) return '<span class="muted small">—</span>';
+  return m.split('').map(c=>`<span class="pill" title="${MARK_MAP[c]||c}">${c}</span>`).join(' ');
+}
+function rateTag(r){
+  const col = r==='A+'?'#f59e0b':(r==='A'?'#2563eb':(r==='B'?'#06b6d4':'#94a3b8'));
+  return `<span class="tag" style="background:${col}1f;color:${col};border:1px solid ${col}55">${r}</span>`;
+}
+function scoreTableHtml(t){
+  const head = `<th>级别</th><th>等级</th>` + t.cols.map(c=>`<th>${esc(c)}</th>`).join('');
+  const body = t.rows.map(r=>`<tr><td>${esc(r.lv)}</td><td>${esc(r.g)}</td>`+
+    r.v.map(v=>`<td style="text-align:center;font-weight:600;color:#1e293b">${v}</td>`).join('')+`</tr>`).join('');
+  return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
+    <div class="small muted" style="margin-top:6px">${esc(t.note||'')}</div>`;
+}
+function renderRegulations(){
+  const S=R.school, N=R.national;
+  if(!S.title) { $('#regulations').innerHTML='<div class="empty">数据未加载</div>'; return; }
+
+  /* ---- 学校计分办法 ---- */
+  const catHtml = S.categories.map(c=>`<div class="fac-det" style="border-left:4px solid var(--primary)">
+    <summary><b>${esc(c.code)} 类</b></summary><div class="small" style="padding:6px 0;color:#334155">${esc(c.desc)}</div></div>`).join('');
+
+  const aplusRows = S.aplus.map((a,i)=>`<tr><td style="text-align:center">${i+1}</td>
+    <td><b>${esc(a.name)}</b></td><td class="small">${esc(a.host||'—')}</td></tr>`).join('');
+
+  const aRowsAll = S.a_list.map((a,i)=>`<tr class="${a.eng?'engrow':''}" data-eng="${a.eng?1:0}">
+    <td style="text-align:center">${i+1}</td>
+    <td>${a.eng?'🔧 ':''}<b>${esc(a.name)}</b></td>
+    <td class="small">${esc(a.host||'—')}</td>
+    <td>${markBadges(a.mark)}</td>
+    <td style="text-align:center">${a.eng?'<span class="tag" style="background:#ecfdf5;color:#059669">相关</span>':'<span class="muted small">—</span>'}</td>
+    </tr>`).join('');
+  const engCount = S.a_list.filter(a=>a.eng).length;
+
+  const rulesHtml = S.score_rules.map(r=>`<li>${esc(r)}</li>`).join('');
+
+  /* ---- 全国赛事评级 ---- */
+  const miitRows = (N.miit_events||[]).map(e=>`<tr><td><b>${esc(e.name)}</b></td>
+    <td class="small">${esc(e.rel)}</td><td class="small">${esc(e.dir)}</td>
+    <td style="text-align:center">${rateTag(e.rate)}</td></tr>`).join('');
+  const topRows = (N.top_events||[]).map(e=>`<tr><td><b>${esc(e.name)}</b></td>
+    <td class="small">${esc(e.dir)}</td><td style="text-align:center">${rateTag(e.rate)}</td></tr>`).join('');
+  const adviceHtml = (N.apply_advice||[]).map(a=>`<li>${esc(a)}</li>`).join('');
+  const srcHtml = (N.sources||[]).map(s=>`<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a> <span class="small muted">${esc(s.url)}</span></li>`).join('');
+
+  /* ---- 交叉对照：工程软件怎么用 ---- */
+  const engA = S.a_list.filter(a=>a.eng);
+  const engHtml = engA.map(a=>`<tr><td>${markBadges(a.mark)} <b>${esc(a.name)}</b></td>
+    <td class="small">${esc(a.host||'—')}</td></tr>`).join('');
+  const miitNames = new Set((N.miit_events||[]).map(e=>e.name).concat((N.top_events||[]).map(e=>e.name)));
+  const miitArr = Array.from(miitNames);
+  const overlap = engA.filter(a=>miitArr.some(m=> a.name.includes(m.replace(/全国|湖南省|中国/g,''))||m.includes(a.name.replace(/全国|湖南省|中国/g,'')))).length;
+
+  const html = `
+  <div class="lead-banner">
+    📑 <b>制度与赛事评级</b><br>
+    把两份硬核资料整进来了：① 学校《<b>${esc(S.title)}</b>》（官网 ${esc(S.published)}，自 ${esc(S.effective)}）；
+    ② 全国《<b>${esc(N.title)}</b>》（${esc(N.updated)}）。
+    前者告诉你<b>学校认可哪些赛、奖了多少分</b>，后者告诉你<b>哪些赛全国含金量高、哪些跟工信/技术强相关</b>——两者对照，就是你该冲的优先级。
+  </div>
+
+  <!-- 学校计分办法 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>一、学校竞赛分类（A+ / A / B / C）</h3>
+    ${catHtml}
+    <div class="note">认定依据：计分当年或前一年湖南省教育厅学科竞赛通知、中国高等教育学会《全国普通高校大学生竞赛目录》、湖南省教育厅《省管高校领导班子高质量发展成效评价方案》列入项目。</div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>二、学科竞赛成果计分标准（指导教师计分，单位：分）</h3>
+    ${scoreTableHtml(S.score_table)}
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>三、大创计划项目计分标准（指导教师计分，单位：分）</h3>
+    ${scoreTableHtml(S.innov_table)}
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>四、关键计分规则</h3>
+    <ul class="prose">${rulesHtml}</ul>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>五、附件清单：A+ 类（4 项）</h3>
+    <table><thead><tr><th style="width:48px">序号</th><th>竞赛项目</th><th>主办单位</th></tr></thead><tbody>${aplusRows}</tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>六、附件清单：A 类（41 项）</h3>
+    <div class="small muted" style="margin-bottom:8px">标记含义：
+      <span class="pill" title="${MARK_MAP['#']}">#</span>省厅竞赛通知　
+      <span class="pill" title="${MARK_MAP['*']}">*</span>高教学会竞赛目录　
+      <span class="pill" title="${MARK_MAP['○']}">○</span>省管高校评价方案　
+      🔧 = 与<b>工程软件专业</b>高度相关（共 ${engCount} 项）</div>
+    <div class="seg" id="ra-seg" style="margin-bottom:12px">
+      <button data-f="0" class="${_regAFilter?'':'active'}">全部 41 项</button>
+      <button data-f="1" class="${_regAFilter?'active':''}">只看工程软件相关（${engCount}）</button>
+    </div>
+    <table id="ra-tbl"><thead><tr><th style="width:48px">序号</th><th>竞赛项目</th><th>主办单位</th><th>标记</th><th style="width:70px">工程相关</th></tr></thead>
+      <tbody>${aRowsAll}</tbody></table>
+    <div class="note">注：B 类共 <b>${S.b_count}</b> 项，由教学单位每年集中申报、经审核批准后方可计分。本试行办法仅列数量，未附明细；参赛以学校当年度发布的 B 类目录为准。</div>
+  </div>
+
+  <!-- 全国赛事评级 -->
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>七、全国赛事评级口径</h3>
+    <div class="prose" style="margin:0">${esc(N.rating_note||'')}</div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>八、工信部主办/指导/产业关联度较高的赛事</h3>
+    <table><thead><tr><th>赛事名称</th><th>组织 / 关联口径</th><th>方向</th><th style="width:60px">建议评级</th></tr></thead>
+      <tbody>${miitRows}</tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>九、全国常见高认可度赛事</h3>
+    <table><thead><tr><th>赛事名称</th><th>方向</th><th style="width:60px">建议评级</th></tr></thead>
+      <tbody>${topRows}</tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>十、报名与简历使用建议</h3>
+    <ul class="prose">${adviceHtml}</ul>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3><span class="dot"></span>十一、来源与核验入口</h3>
+    <ul class="prose">${srcHtml}</ul>
+    <div class="note" style="margin-top:8px">${esc(N.disclaimer||'')}</div>
+  </div>
+
+  <!-- 交叉对照 -->
+  <div class="card">
+    <h3><span class="dot"></span>十二、工程软件专业：两份资料怎么用（对照结论）</h3>
+    <div class="lead-banner" style="margin-bottom:12px">
+      🔧 学校 <b>A 类 41 项</b>里，与你的工程软件专业高度相关的有 <b>${engCount}</b> 项；
+      其中又有相当一部分同时出现在「工信部关联 / 全国高认可度」清单中（如电子设计、物联网、计算机设计、数学建模、结构设计、节能减排等）。
+      <b>结论：优先冲这些“学校认可 + 全国含金量高 + 技术对口”的三重合赛项。</b>
+    </div>
+    <table><thead><tr><th>学校 A 类 · 工程软件相关赛项（标记见上）</th><th>主办单位</th></tr></thead>
+      <tbody>${engHtml}</tbody></table>
+    <div class="note">💡 打法建议：以学校 A 类里的<b>数学建模、电子设计、物联网/计算机程序设计、测绘智能、结构设计、统计建模</b>为主战场（本院 + 大数据与统计学院 + 计算机学院带赛）；
+    再叠加「挑战杯 / 互联网+」做技术合伙人；工信部方向可优先选 电子设计/智能车/机器人/信息安全 中的 1 个主赛，搭配数学建模，组成你的竞赛组合拳。</div>
+  </div>`;
+  $('#regulations').innerHTML = html;
+
+  // A类筛选交互
+  $$('#ra-seg button').forEach(b=>b.onclick=()=>{
+    $$('#ra-seg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    _regAFilter = b.dataset.f==='1';
+    $$('#ra-tbl tbody tr').forEach(tr=>{
+      if(!_regAFilter) tr.style.display='';
+      else tr.style.display = tr.dataset.eng==='1' ? '' : 'none';
+    });
+  });
+  if(_regAFilter) $$('#ra-tbl tbody tr').forEach(tr=>{ if(tr.dataset.eng!=='1') tr.style.display='none'; });
+}
+
 /* ---------- 启动 ---------- */
 renderOverview();
 renderSearch();
@@ -950,6 +1168,7 @@ renderTimeline();
 renderGuide();
 renderRoadmap();
 renderResources();
+renderRegulations();
 </script>
 </body>
 </html>
